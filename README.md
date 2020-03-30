@@ -29,9 +29,13 @@ go run main.go
 我们看接受主题的接口
 
 type TopicReceivers interface {
+
 	GetQueueName() string
+	
 	GetRoutingKeys() []string
+	
 	Execute(routingKey string, data interface{}) error
+	
 }
 
 推送邮件已写完的消息：
@@ -47,19 +51,27 @@ TopicPush("emain.write.finish","i finish an email")
 type MsgTopic struct {}
 
 func (c MsgTopic) GetQueueName() string {
+
 	return "topic_email"
+	
 }
 
 // 路由规则
 func (c MsgTopic) GetRoutingKeys() []string {
+
 	return []string{"emain.write.finish","emain.write.*"}
+	
 }
 
 // 执行
 func (c MsgTopic) Execute(routingKey string,data interface{}) error {
+
 	fmt.Println(routingKey)
+	
 	fmt.Println(data)
+	
 	return nil
+	
 }
 
 接收者2：
@@ -67,19 +79,27 @@ func (c MsgTopic) Execute(routingKey string,data interface{}) error {
 type TodoTopic struct {}
 
 func (c TodoTopic) GetQueueName() string {
+
 	return "topic_email"
+	
 }
 
 // 路由规则
 func (c TodoTopic) GetRoutingKeys() []string {
+
 	return []string{"emain.write.finish","emain.write.*"}
+	
 }
 
 // 执行
 func (c TodoTopic) Execute(routingKey string,data interface{}) error {
+
 	fmt.Println(routingKey)
+	
 	fmt.Println(data)
+	
 	return nil
+	
 }
 
 并在运行的进程运行它们(可参考 queue/test_topic_push 和queue/test_topic_listen ) 
@@ -119,7 +139,9 @@ go run main.go
 
 //Job 工作队列
 type JobReceivers interface {
+
 	Execute(interface{}) error //执行任务
+	
 }
 
 
@@ -134,9 +156,13 @@ Push("SendEmail","this is an email")
 type SendEmailJob struct {}
 
 func (c SendEmailJob) Execute(data interface{}) error {
+
 	// 业务代码
+	
 	fmt.Println(data)
+	
 	return nil
+	
 }
 
 并在运行的进程Listen监听他  Listen(map[string]que.JobReceivers{"SendEmail":SendEmailJob{}}) 

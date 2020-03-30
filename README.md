@@ -7,64 +7,11 @@ go get github.com/menjiasong00/queue
 或者 git clone github.com/menjiasong00/queue.git
  
 
-二、工作模式 
-
-1、测试demo
-
-新起一个控制台
-
-生产者:que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).Push("TestJob","xxxxxx")
-
-代码例子：
-
-cd /你的目录/github.com/menjiasong00/queue/test_job_push  
-
-go run main.go 
-
-消费者：que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).Listen(map[string]que.JobReceivers{"TestJob":MsgJob{}})
-
-代码例子：
-
-cd /你的目录/github.com/menjiasong00/queue/test_job_listen  
-
-go run main.go 
-
-2、代码解释
-
-我们看工作的接口
-
-//Job 工作队列
-type JobReceivers interface {
-	Execute(interface{}) error //执行任务
-}
 
 
-推送发邮件的消息：
+二、主题订阅 topic 
 
-Push("SendEmail","this is an email")
-
-在消息Push进队列后 ，监听程序Listen到消息，解析出map里Job名称 ，并调用对应的Execute
-
-因此，只需要把工作的 接口实现出来：
-
-type SendEmailJob struct {}
-
-func (c SendEmailJob) Execute(data interface{}) error {
-	// 业务代码
-	fmt.Println(data)
-	return nil
-}
-
-并在运行的进程Listen监听他  Listen(map[string]que.JobReceivers{"SendEmail":SendEmailJob{}}) 
-
-把示例的生产者和消费者(可参考 queue/test_job_push 和queue/test_job_listen )go run main.go 。可以看到消费者中执行了SendEmailJob的 Execute
-
-
- 
-
-三、主题订阅 topic 
-
-1、工作模式 jobs
+1、执行demo
 
 代码例子：
 
@@ -143,7 +90,63 @@ func (c TodoTopic) Execute(routingKey string,data interface{}) error {
 
 两个进程都收到了消息并执行了对应的业务 Execute
 
-三、总结
+
+三、工作模式 
+
+1、测试demo
+
+新起一个控制台
+
+生产者:que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).Push("TestJob","xxxxxx")
+
+代码例子：
+
+cd /你的目录/github.com/menjiasong00/queue/test_job_push  
+
+go run main.go 
+
+消费者：que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).Listen(map[string]que.JobReceivers{"TestJob":MsgJob{}})
+
+代码例子：
+
+cd /你的目录/github.com/menjiasong00/queue/test_job_listen  
+
+go run main.go 
+
+2、代码解释
+
+我们看工作的接口
+
+//Job 工作队列
+type JobReceivers interface {
+	Execute(interface{}) error //执行任务
+}
+
+
+推送发邮件的消息：
+
+Push("SendEmail","this is an email")
+
+在消息Push进队列后 ，监听程序Listen到消息，解析出map里Job名称 ，并调用对应的Execute
+
+因此，只需要把工作的 接口实现出来：
+
+type SendEmailJob struct {}
+
+func (c SendEmailJob) Execute(data interface{}) error {
+	// 业务代码
+	fmt.Println(data)
+	return nil
+}
+
+并在运行的进程Listen监听他  Listen(map[string]que.JobReceivers{"SendEmail":SendEmailJob{}}) 
+
+把示例的生产者和消费者(可参考 queue/test_job_push 和queue/test_job_listen )go run main.go 。可以看到消费者中执行了SendEmailJob的 Execute
+
+
+ 
+
+四、总结
 
 不管是工作模式还是订阅模式 ，设计思路都是 留出接口 让业务代码进行水平扩展，这样在业务中只需要去实现一个个 job或者topic的接收者。而不用关心消息的流转过程和处理。
 

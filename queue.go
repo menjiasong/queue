@@ -109,12 +109,6 @@ func (q *Queue) SetPriority(priority string) *Queue {
 }
 
 
-//Job 工作队列
-type JobReceivers interface {
-	Execute(interface{}) error //执行任务
-}
-
-
 //Push 工作队列模式 1、jobName工作名 2、data数据
 func (q *Queue) Push(jobName string, data interface{}) error {
 
@@ -264,13 +258,6 @@ func bytesToString(b *[]byte) *string {
 	return &r
 }
 
-
-//topic接口
-type TopicReceivers interface {
-	GetQueueName() string
-	GetRoutingKeys() []string
-	Execute(routingKey string, data interface{}) error
-}
 
 
 //TopicPush  1、路由名 2、数据

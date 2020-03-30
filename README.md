@@ -48,7 +48,7 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 
 只需要把接收者 接口实现出来：
 
-接收者1号：
+接收者1号[邮件发送]：
 
 	type MsgTopic struct {}
 
@@ -76,7 +76,7 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 		
 	}
 
-接收者2号：
+接收者2号[干点别的]：
 
 	type TodoTopic struct {}
 

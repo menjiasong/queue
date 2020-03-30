@@ -2,9 +2,11 @@
 
 一、安装使用 
 
-go get github.com/menjiasong00/queue
+	go get github.com/menjiasong00/queue
 
-或者 git clone github.com/menjiasong00/queue.git
+或者 
+
+	git clone github.com/menjiasong00/queue.git
  
 
 
@@ -17,11 +19,11 @@ go get github.com/menjiasong00/queue
 
 cd /你的目录/github.com/menjiasong00/queue/test_topic_push  
 
-go run main.go 
+	go run main.go 
 
 cd /你的目录/github.com/menjiasong00/queue/test_topic_listen  
 
-go run main.go 
+	go run main.go 
 
 
 2、代码解释
@@ -29,15 +31,15 @@ go run main.go
 我们看主题 接收者的接口
 
 
-type TopicReceivers interface {
+	type TopicReceivers interface {
 
-	GetQueueName() string
-	
-	GetRoutingKeys() []string
-	
-	Execute(routingKey string, data interface{}) error
-	
-}
+		GetQueueName() string
+		
+		GetRoutingKeys() []string
+		
+		Execute(routingKey string, data interface{}) error
+		
+	}
 
 
 推送邮件已写完的消息：
@@ -50,65 +52,65 @@ TopicPush("emain.write.finish","i finish an email")
 
 接收者1：
 
-type MsgTopic struct {}
+	type MsgTopic struct {}
 
-func (c MsgTopic) GetQueueName() string {
+	func (c MsgTopic) GetQueueName() string {
 
-	return "topic_email"
-	
-}
+		return "topic_email"
+		
+	}
 
-// 路由规则
-func (c MsgTopic) GetRoutingKeys() []string {
+	// 路由规则
+	func (c MsgTopic) GetRoutingKeys() []string {
 
-	return []string{"emain.write.finish","emain.write.*"}
-	
-}
+		return []string{"emain.write.finish","emain.write.*"}
+		
+	}
 
-// 执行
-func (c MsgTopic) Execute(routingKey string,data interface{}) error {
+	// 执行
+	func (c MsgTopic) Execute(routingKey string,data interface{}) error {
 
-	fmt.Println(routingKey)
-	
-	fmt.Println(data)
-	
-	return nil
-	
+		fmt.Println(routingKey)
+		
+		fmt.Println(data)
+		
+		return nil
+		
 }
 
 接收者2：
 
-type TodoTopic struct {}
+	type TodoTopic struct {}
 
-func (c TodoTopic) GetQueueName() string {
+	func (c TodoTopic) GetQueueName() string {
 
-	return "topic_todo"
-	
-}
+		return "topic_todo"
+		
+	}
 
-// 路由规则
-func (c TodoTopic) GetRoutingKeys() []string {
+	// 路由规则
+	func (c TodoTopic) GetRoutingKeys() []string {
 
-	return []string{"emain.write.finish"}
-	
-}
+		return []string{"emain.write.finish"}
+		
+	}
 
-// 执行
-func (c TodoTopic) Execute(routingKey string,data interface{}) error {
+	// 执行
+	func (c TodoTopic) Execute(routingKey string,data interface{}) error {
 
-	fmt.Println(routingKey)
-	
-	fmt.Println(data)
-	
-	return nil
-	
-}
+		fmt.Println(routingKey)
+		
+		fmt.Println(data)
+		
+		return nil
+		
+	}
 
 并在运行的进程运行它们(可参考 queue/test_topic_push 和queue/test_topic_listen ) 
 
- TopicListen(MsgTopic{})  
+	 TopicListen(MsgTopic{})  
 
- TopicListen(TodoTopic{}) 
+	 TopicListen(TodoTopic{}) 
 
 两个进程都收到了消息并执行了对应的业务 Execute
 
@@ -139,33 +141,33 @@ go run main.go
 
 我们看工作的接口
 
-//Job 工作队列
-type JobReceivers interface {
+	//Job 工作队列
+	type JobReceivers interface {
 
-	Execute(interface{}) error //执行任务
-	
-}
+		Execute(interface{}) error //执行任务
+		
+	}
 
 
 推送发邮件的消息：
 
-Push("SendEmail","this is an email")
+	Push("SendEmail","this is an email")
 
 在消息Push进队列后 ，监听程序Listen到消息，解析出map里Job名称 ，并调用对应的Execute
 
 因此，只需要把工作的 接口实现出来：
 
-type SendEmailJob struct {}
+	type SendEmailJob struct {}
 
-func (c SendEmailJob) Execute(data interface{}) error {
+	func (c SendEmailJob) Execute(data interface{}) error {
 
-	// 业务代码
-	
-	fmt.Println(data)
-	
-	return nil
-	
-}
+		// 业务代码
+		
+		fmt.Println(data)
+		
+		return nil
+		
+	}
 
 并在运行的进程Listen监听他  Listen(map[string]que.JobReceivers{"SendEmail":SendEmailJob{}}) 
 

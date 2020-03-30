@@ -1,4 +1,4 @@
-基于rabbitmq的 消息队列封装 
+基于rabbitmq的 消息队列golang封装 
 
 一、安装使用 
 
@@ -9,7 +9,7 @@ go get github.com/menjiasong00/queue
 
 
 
-二、主题订阅 topic 
+二主题订阅 topic 
 
 1、执行demo
 
@@ -26,7 +26,8 @@ go run main.go
 
 2、代码解释
 
-我们看接受主题的接口
+我们看主题 接收者的接口
+
 
 type TopicReceivers interface {
 
@@ -37,6 +38,7 @@ type TopicReceivers interface {
 	Execute(routingKey string, data interface{}) error
 	
 }
+
 
 推送邮件已写完的消息：
 
@@ -80,14 +82,14 @@ type TodoTopic struct {}
 
 func (c TodoTopic) GetQueueName() string {
 
-	return "topic_email"
+	return "topic_todo"
 	
 }
 
 // 路由规则
 func (c TodoTopic) GetRoutingKeys() []string {
 
-	return []string{"emain.write.finish","emain.write.*"}
+	return []string{"emain.write.finish"}
 	
 }
 

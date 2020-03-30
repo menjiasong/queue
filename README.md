@@ -40,15 +40,15 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 	}
 
 
-推送邮件已写完的消息：
+我们假设现在业务完成了 一条 邮件排版的提交。  推送[邮件已写完]的消息：
 
 	que.New().TopicPush("emain.write.finish","i finish an email")
 
-在消息Push进队列后 ，N个接收者以 某些规则订阅了该消息，则这些接收者都能收到该消息： 
+在消息Push进队列后 ， 接收者1号[邮件发送] 接收者2号[干点其他的事] 以 某规则订阅了[邮件已写完] 消息，则这些接收者都能收到该消息： 
 
-因此，只需要把接收者 接口实现出来：
+只需要把接收者 接口实现出来：
 
-接收者1：
+接收者1号：
 
 	type MsgTopic struct {}
 
@@ -76,7 +76,7 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 		
 	}
 
-接收者2：
+接收者2号：
 
 	type TodoTopic struct {}
 
@@ -110,7 +110,7 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 
 	 que.New().TopicListen(TodoTopic{}) 
 
-两个进程都收到了消息并执行了对应的业务 Execute
+两个进程都收到了消息并执行了对应的业务 Execute 。完成了 [邮件排版的提交] 和 [邮件发送]模块 [干点别的]模块 的解耦
 
 
 三、工作模式 

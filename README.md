@@ -42,7 +42,7 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 
 推送邮件已写完的消息：
 
-	que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).TopicPush("emain.write.finish","i finish an email")
+	que.New().TopicPush("emain.write.finish","i finish an email")
 
 在消息Push进队列后 ，N个接收者以 某些规则订阅了该消息，则这些接收者都能收到该消息： 
 
@@ -106,9 +106,9 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 
 并在运行的进程运行它们(可参考 queue/test_topic_push 和queue/test_topic_listen ) 
 
-	 que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).TopicListen(MsgTopic{})  
+	 que.New().TopicListen(MsgTopic{})  
 
-	 que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).TopicListen(TodoTopic{}) 
+	 que.New().TopicListen(TodoTopic{}) 
 
 两个进程都收到了消息并执行了对应的业务 Execute
 
@@ -121,7 +121,7 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 
 生产者:
 
-	que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).Push("TestJob","xxxxxx")
+	que.New().Push("TestJob","xxxxxx")
 
 代码例子：
 
@@ -131,7 +131,7 @@ go run main.go
 
 消费者：
 
-	que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).Listen(map[string]que.JobReceivers{"TestJob":MsgJob{}})
+	que.New().Listen(map[string]que.JobReceivers{"TestJob":MsgJob{}})
 
 代码例子：
 
@@ -153,7 +153,7 @@ go run main.go
 
 推送发邮件的消息：
 
-	Push("SendEmail","this is an email")
+	que.New().Push("SendEmail","this is an email")
 
 在消息Push进队列后 ，监听程序Listen到消息，解析出map里Job名称 ，并调用对应的Execute
 
@@ -173,7 +173,7 @@ go run main.go
 
 并在运行的进程Listen监听他 
  
-	Listen(map[string]que.JobReceivers{"SendEmail":SendEmailJob{}}) 
+	que.New().Listen(map[string]que.JobReceivers{"SendEmail":SendEmailJob{}}) 
 
 把示例的生产者和消费者(可参考 queue/test_job_push 和queue/test_job_listen )go run main.go 。可以看到消费者中执行了SendEmailJob的 Execute
 

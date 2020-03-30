@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	err :=que.NewConfig([]string{"10.10.18.130","5672","guest","guest"}).TopicListen(MsgTopic{})
+	err :=que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).TopicListen(MsgTopic{})
 	fmt.Println(err.Error())
 
 }

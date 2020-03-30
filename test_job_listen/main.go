@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	err :=que.NewConfig([]string{"10.10.18.130","5672","guest","guest"}).Listen(map[string]que.JobReceivers{"TestJob":MsgJob{}})
+	err :=que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).Listen(map[string]que.JobReceivers{"TestJob":MsgJob{}})
 	fmt.Println(err.Error())
 
 }

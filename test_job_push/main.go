@@ -7,6 +7,6 @@ import (
 
 func main() {
 
-	que.NewConfig([]string{"10.10.18.130","5672","guest","guest"}).Push("TestJob","xxxxxx")
+	que.NewConfig([]string{"127.0.0.1","5672","guest","guest"}).Push("TestJob","xxxxxx")
 
 }

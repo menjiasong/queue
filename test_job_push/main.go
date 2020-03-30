@@ -2,7 +2,7 @@ package main
 
 import (
 
-	que "planet/pkg/queue"
+	que "github.com/menjiasong00/queue"
 )
 
 func main() {

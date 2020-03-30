@@ -1,16 +1,15 @@
 基于rabbitmq的 消息队列封装 
 
 一、安装使用 
-1、go get github.com/menjiasong00/queue (或者 git clone github.com/menjiasong00/queue.git)
 
-2、测试
+go get github.com/menjiasong00/queue
 
-cd  github.com/menjiasong00/queue/test_job_push  
+或者 git clone github.com/menjiasong00/queue.git
+ 
 
-go run main.go 
+二、工作模式 
 
-二、两种模式试用 
-1、工作模式 jobs
+1、测试demo
 
 新起一个控制台
 
@@ -30,10 +29,8 @@ cd /你的目录/github.com/menjiasong00/queue/test_job_listen
 
 go run main.go 
 
-2、主题订阅 topic 例子同上
+2、代码解释
 
-三、代码说明
-1、工作模式 jobs
 我们看工作的接口
 
 //Job 工作队列
@@ -62,7 +59,25 @@ func (c SendEmailJob) Execute(data interface{}) error {
 
 把示例的生产者和消费者(可参考 queue/test_job_push 和queue/test_job_listen )go run main.go 。可以看到消费者中执行了SendEmailJob的 Execute
 
-2、topic 主题订阅
+
+ 
+
+三、主题订阅 topic 
+
+1、工作模式 jobs
+
+代码例子：
+
+cd /你的目录/github.com/menjiasong00/queue/test_topic_push  
+
+go run main.go 
+
+cd /你的目录/github.com/menjiasong00/queue/test_topic_listen  
+
+go run main.go 
+
+
+2、代码解释
 
 我们看接受主题的接口
 

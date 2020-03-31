@@ -33,8 +33,6 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 
 		GetQueueName() string
 		
-		GetRoutingKeys() []string
-		
 		Execute(routingKey string, data interface{}) error
 		
 	}
@@ -55,13 +53,6 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 	func (c MsgTopic) GetQueueName() string {
 
 		return "topic_email"
-		
-	}
-
-	// 路由规则
-	func (c MsgTopic) GetRoutingKeys() []string {
-
-		return []string{"emain.write.finish","emain.write.*"}
 		
 	}
 
@@ -86,13 +77,6 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 		
 	}
 
-	// 路由规则
-	func (c TodoTopic) GetRoutingKeys() []string {
-
-		return []string{"emain.write.finish"}
-		
-	}
-
 	// 执行
 	func (c TodoTopic) Execute(routingKey string,data interface{}) error {
 
@@ -105,6 +89,12 @@ cd /你的目录/github.com/menjiasong00/queue/test_topic_listen
 	}
 
 并在运行的进程运行它们(可参考 queue/test_topic_push 和queue/test_topic_listen ) 
+
+路由绑定规则：
+	
+	que.New().TopicQueueBind("topic_test",[]string{"xx.*","xx.22.xx"})
+	
+监听：
 
 	 que.New().TopicListen(MsgTopic{})  
 

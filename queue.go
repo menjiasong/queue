@@ -70,12 +70,6 @@ func NewConfig(config []string) (q *Queue) {
 	return
 }
 
-//Destroy 关闭连接
-func (q *Queue) Destroy() {
-	q.channel.Close()
-	q.conn.Close()
-}
-
 //MakeConn 创建连接
 func (q *Queue) MakeConn() {
 	q.conn, q.err = amqp.Dial("amqp://" + q.config.User + ":" + q.config.Password + "@" + q.config.Host + ":" + q.config.Port + "/")
@@ -84,6 +78,11 @@ func (q *Queue) MakeConn() {
 	}
 }
 
+//Destroy 关闭连接
+func (q *Queue) Destroy() {
+	q.channel.Close()
+	q.conn.Close()
+}
 
 //SetConfig 自定义配置
 func (q *Queue) SetConfig (config []string) *Queue {
@@ -96,21 +95,33 @@ func (q *Queue) SetConfig (config []string) *Queue {
 	return q
 }
 
-//SetQueue 选择队列，只能传在config里面配的 main task error
-func (q *Queue) SetQueue(name string) *Queue {
-	q.JobQueueName = name
-	return q
-}
-
 //SetPriority 设置优先级 queue.New().SetPriority("6").Push("TestJob", map[string]interface{}{"Id": 1, "Name": "18103129"})
 func (q *Queue) SetPriority(priority string) *Queue {
 	q.Priority = priority
 	return q
 }
 
+//bytes转字符串
+func bytesToString(b *[]byte) *string {
+	s := bytes.NewBuffer(*b)
+	r := s.String()
+	return &r
+}
+
+
+/*工作队列*/
+
+
+//SetQueue 选择队列，只能传在config里面配的 main task error
+func (q *Queue) SetQueue(name string) *Queue {
+	q.JobQueueName = name
+	return q
+}
 
 //Push 工作队列模式 1、jobName工作名 2、data数据
 func (q *Queue) Push(jobName string, data interface{}) error {
+	//创建MQ连接
+	q.MakeConn()
 
 	if q.err != nil {
 		return q.err
@@ -158,6 +169,8 @@ func (q *Queue) Push(jobName string, data interface{}) error {
 
 //Listen 工作队列监听 1、队列名queueName
 func (q *Queue) Listen(Jobs map[string]JobReceivers) error {
+	//创建MQ连接
+	q.MakeConn()
 
 	if q.err != nil {
 		return q.err
@@ -251,17 +264,21 @@ func (q *Queue) Listen(Jobs map[string]JobReceivers) error {
 	return nil
 }
 
-//bytes转字符串
-func bytesToString(b *[]byte) *string {
-	s := bytes.NewBuffer(*b)
-	r := s.String()
-	return &r
-}
 
+/*topic主题订阅*/
+
+
+//SetExchange 选择交换机
+func (q *Queue) SetExchange(name string) *Queue {
+	q.TopicExchangeName = name
+	return q
+}
 
 
 //TopicPush  1、路由名 2、数据
 func (q *Queue) TopicPush(routingKey string, data interface{}) error {
+	//创建MQ连接
+	q.MakeConn()
 
 	if q.err != nil {
 		return q.err
@@ -303,9 +320,38 @@ func (q *Queue) TopicPush(routingKey string, data interface{}) error {
 
 }
 
+//TopicQueueBind 订阅规则
+func (q *Queue) TopicQueueBind(queueName string,routingKey []string) error {
+	//创建MQ连接
+	q.MakeConn()
+
+	if q.err != nil {
+		return q.err
+	}
+	ch := q.channel
+
+	for _, s := range routingKey {
+		err := ch.QueueBind(
+			queueName,          // queue name
+			s,                   // routing key
+			q.TopicExchangeName, // exchange
+			false,
+			nil)
+		if err != nil {
+			return err
+		}
+	}
+	q.Destroy()
+
+	return nil
+}
+
+
 //监听：queue.New().TopicListen(topic.Task{})
 //TopicListen  队列监听 传入参数必须是topic类型的接口才可监听
 func (q *Queue) TopicListen(t TopicReceivers) error {
+	//创建MQ连接
+	q.MakeConn()
 
 	if q.err != nil {
 		return q.err
@@ -338,7 +384,7 @@ func (q *Queue) TopicListen(t TopicReceivers) error {
 		return err
 	}
 
-	for _, s := range t.GetRoutingKeys() {
+/*	for _, s := range t.GetRoutingKeys() {
 		////wlog.WithFields(logrus.Fields{"queue": queue.Name, "router": q.TopicExchangeName, "rule": s}).Info("绑定队列 %s 到交换机 %s ，路由规则为： %s", queue.Name, q.TopicExchangeName, s)
 		err = ch.QueueBind(
 			queue.Name,          // queue name
@@ -349,7 +395,7 @@ func (q *Queue) TopicListen(t TopicReceivers) error {
 		if err != nil {
 			return err
 		}
-	}
+	}*/
 
 	msgs, err := ch.Consume(
 		queue.Name, // queue
